@@ -4,39 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fitness Tracker</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Fitness Tracker</h1>
-        <!-- Workout Form -->
-        <form id="workout-form">
-            <input type="text" id="activity" placeholder="Activity (e.g., Running)" required />
-            <input type="number" id="calories" placeholder="Calories Burned" required />
-            <input type="number" id="duration" placeholder="Duration (minutes)" required />
-            <input type="date" id="date" required />
-            <button type="submit">Add Workout</button>
-        </form>
-        <!-- Workout Log -->
-        <div class="table-container">
-            <h2>Workout Log</h2>
-            <table id="workout-table">
-                <thead>
-                    <tr>
-                        <th>Activity</th>
-                        <th>Calories Burned</th>
-                        <th>Duration</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="workout-list"></tbody>
-            </table>
-            <div class="empty-state" id="empty-state">No workouts logged yet.</div>
-        </div>
+    <!-- Motivational Quote -->
+    <div class="motivational-quote">
+        <p>"The only bad workout is the one that didn't happen."</p>
     </div>
 
+    <!-- Tabs for different sections -->
+    <div class="tabs">
+        <button class="tab-button" data-tab="formTab" onclick="openTab('formTab')">Log Workout</button>
+        <button class="tab-button" data-tab="logTab" onclick="openTab('logTab')">Workout Log</button>
+        <button class="tab-button" data-tab="comparisonTab" onclick="openTab('comparisonTab')">Best Comparison</button>
+        <button class="tab-button" data-tab="visualizationTab" onclick="openTab('visualizationTab')">Visualization</button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="formTab">
+        <form id="workoutForm">
+            <input type="text" id="activity" placeholder="Activity" required>
+            <input type="number" id="calories" placeholder="Calories Burned" required>
+            <input type="number" id="duration" placeholder="Duration (minutes)" required>
+            <input type="date" id="date" required>
+            <button type="submit">Log Workout</button>
+        </form>
+    </div>
+
+    <div class="tab-content" id="logTab">
+        <h3>Workout Log</h3>
+        <table id="workoutTable">
+            <thead>
+                <tr>
+                    <th>Activity</th>
+                    <th>Calories</th>
+                    <th>Duration</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <select id="filterActivity" onchange="filterWorkouts()">
+            <option value="">All Activities</option>
+            <!-- Options will be populated dynamically -->
+        </select>
+    </div>
+
+    <div class="tab-content" id="comparisonTab">
+        <h3>Best Workout Comparison</h3>
+        <p>Best calories burned in a workout: <span id="bestComparison">0</span></p>
+    </div>
+
+    <div class="tab-content" id="visualizationTab">
+        <h3>Workout Visualization</h3>
+        <canvas id="caloriesChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
