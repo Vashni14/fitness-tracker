@@ -1,5 +1,6 @@
 let workouts = [];  // Array to store workouts
 let activities = [];  // Array to store distinct workout activities
+let dates = [];  // Array to store distinct workout dates
 
 // Handle tab switching
 function openTab(tabName) {
@@ -42,10 +43,11 @@ function loadWorkouts() {
         .then(data => {
             workouts = data;
             activities = [...new Set(data.map(workout => workout.activity))]; // Get unique activities
+            dates = [...new Set(data.map(workout => new Date(workout.date).toLocaleDateString()))]; // Get unique dates
             displayWorkouts(workouts);
             displayBestComparison();
             displayVisualization();
-            populateActivityFilter();
+            populateFilters();
         })
         .catch(error => console.error('Error fetching workouts:', error));
 }
@@ -68,63 +70,104 @@ function displayWorkouts(workouts) {
     });
 }
 
-// Filter workouts based on activity
+// Filter workouts based on selected filters
 function filterWorkouts() {
     const filterActivity = document.getElementById('filterActivity').value;
-    const filteredWorkouts = filterActivity ? workouts.filter(workout => workout.activity === filterActivity) : workouts;
+    const filterDate = document.getElementById('filterDate').value;
+    const filterCaloriesMin = parseInt(document.getElementById('filterCaloriesMin').value) || 0;
+    const filterCaloriesMax = parseInt(document.getElementById('filterCaloriesMax').value) || Number.MAX_VALUE;
+    const filterDurationMin = parseInt(document.getElementById('filterDurationMin').value) || 0;
+    const filterDurationMax = parseInt(document.getElementById('filterDurationMax').value) || Number.MAX_VALUE;
+
+    const filteredWorkouts = workouts.filter(workout => {
+        const workoutDate = new Date(workout.date).toLocaleDateString();
+        return (
+            (filterActivity === '' || workout.activity === filterActivity) &&
+            (filterDate === '' || workoutDate === filterDate) &&
+            workout.calories >= filterCaloriesMin &&
+            workout.calories <= filterCaloriesMax &&
+            workout.duration >= filterDurationMin &&
+            workout.duration <= filterDurationMax
+        );
+    });
+
     displayWorkouts(filteredWorkouts);
 }
 
-// Display the best workout comparison (highest calories burned)
-function displayBestComparison() {
-    const bestWorkout = workouts.reduce((best, current) => current.calories > best.calories ? current : best, { calories: 0 });
-    document.getElementById('bestComparison').innerText = bestWorkout.calories;
+// Filter the best comparison list
+function filterComparison() {
+    const comparisonCaloriesMin = parseInt(document.getElementById('comparisonCaloriesMin').value) || 0;
+    const comparisonDurationMin = parseInt(document.getElementById('comparisonDurationMin').value) || 0;
+    const comparisonActivity = document.getElementById('comparisonActivity').value;
+
+    const filteredWorkouts = workouts.filter(workout => {
+        return (
+            workout.calories >= comparisonCaloriesMin &&
+            workout.duration >= comparisonDurationMin &&
+            (comparisonActivity === '' || workout.activity === comparisonActivity)
+        );
+    });
+
+    displayBestComparison(filteredWorkouts);
 }
 
-// Display calories burned over time in a line chart
+// Display the best comparison based on calories burned
+function displayBestComparison(filteredWorkouts = workouts) {
+    const bestComparison = document.getElementById('bestComparison');
+    bestComparison.innerHTML = '';  // Clear previous list
+
+    const sortedWorkouts = filteredWorkouts.sort((a, b) => b.calories - a.calories);  // Sort by calories burned in descending order
+    sortedWorkouts.forEach(workout => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${workout.activity} - ${workout.calories} calories`;
+        bestComparison.appendChild(listItem);
+    });
+}
+
+// Display the workout visualization chart
 function displayVisualization() {
     const ctx = document.getElementById('caloriesChart').getContext('2d');
     const labels = workouts.map(workout => new Date(workout.date).toLocaleDateString());
     const data = workouts.map(workout => workout.calories);
+    const durationData = workouts.map(workout => workout.duration);
 
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels,
             datasets: [{
                 label: 'Calories Burned',
-                data: data,
+                data,
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 2,
+                fill: false
+            }, {
+                label: 'Duration (Minutes)',
+                data: durationData,
+                borderColor: 'rgba(255, 159, 64, 1)',
                 fill: false
             }]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return context.raw + ' calories';
-                        }
-                    }
-                }
+            scales: {
+                x: { title: { display: true, text: 'Date' } },
+                y: { title: { display: true, text: 'Amount' } }
             }
         }
     });
 }
 
-// Populate the activity filter dropdown dynamically
-function populateActivityFilter() {
-    const filterActivitySelect = document.getElementById('filterActivity');
-    activities.forEach(activity => {
-        const option = document.createElement('option');
-        option.value = activity;
-        option.textContent = activity;
-        filterActivitySelect.appendChild(option);
-    });
+// Populate filters dynamically
+function populateFilters() {
+    const filterActivity = document.getElementById('filterActivity');
+    const filterDate = document.getElementById('filterDate');
+
+    // Populate Activity Filter
+    filterActivity.innerHTML = '<option value="">All Activities</option>' + activities.map(activity => `<option value="${activity}">${activity}</option>`).join('');
+
+    // Populate Date Filter
+    filterDate.innerHTML = '<option value="">All Dates</option>' + dates.map(date => `<option value="${date}">${date}</option>`).join('');
 }
 
-// Load workouts on page load
+// Initialize the page
 window.onload = loadWorkouts;

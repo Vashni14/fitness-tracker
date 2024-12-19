@@ -7,57 +7,74 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Motivational Quote -->
-    <div class="motivational-quote">
-        <p>"The only bad workout is the one that didn't happen."</p>
-    </div>
+    <div class="container">
+        <!-- Motivational Quote -->
+        <div class="motivational-quote">
+            <p>"The only bad workout is the one that didn't happen."</p>
+        </div>
 
-    <!-- Tabs for different sections -->
-    <div class="tabs">
-        <button class="tab-button" data-tab="formTab" onclick="openTab('formTab')">Log Workout</button>
-        <button class="tab-button" data-tab="logTab" onclick="openTab('logTab')">Workout Log</button>
-        <button class="tab-button" data-tab="comparisonTab" onclick="openTab('comparisonTab')">Best Comparison</button>
-        <button class="tab-button" data-tab="visualizationTab" onclick="openTab('visualizationTab')">Visualization</button>
-    </div>
+        <!-- Tabs for different sections -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="formTab" onclick="openTab('formTab')">Log Workout</button>
+            <button class="tab-button" data-tab="logTab" onclick="openTab('logTab')">Workout Log</button>
+            <button class="tab-button" data-tab="comparisonTab" onclick="openTab('comparisonTab')">Best Comparison</button>
+            <button class="tab-button" data-tab="visualizationTab" onclick="openTab('visualizationTab')">Visualization</button>
+        </div>
 
-    <!-- Tab Contents -->
-    <div class="tab-content" id="formTab">
-        <form id="workoutForm">
-            <input type="text" id="activity" placeholder="Activity" required>
-            <input type="number" id="calories" placeholder="Calories Burned" required>
-            <input type="number" id="duration" placeholder="Duration (minutes)" required>
-            <input type="date" id="date" required>
-            <button type="submit">Log Workout</button>
-        </form>
-    </div>
+        <!-- Tab Contents -->
+        <div class="tab-content active" id="formTab">
+            <form id="workoutForm">
+                <input type="text" id="activity" placeholder="Activity" required>
+                <input type="number" id="calories" placeholder="Calories Burned" required>
+                <input type="number" id="duration" placeholder="Duration (minutes)" required>
+                <input type="date" id="date" required>
+                <button type="submit">Log Workout</button>
+            </form>
+        </div>
 
-    <div class="tab-content" id="logTab">
-        <h3>Workout Log</h3>
-        <table id="workoutTable">
-            <thead>
-                <tr>
-                    <th>Activity</th>
-                    <th>Calories</th>
-                    <th>Duration</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <select id="filterActivity" onchange="filterWorkouts()">
-            <option value="">All Activities</option>
-            <!-- Options will be populated dynamically -->
-        </select>
-    </div>
+        <div class="tab-content" id="logTab">
+            <h3>Workout Log</h3>
+            <table id="workoutTable">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Calories</th>
+                        <th>Duration</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="filters">
+                <input type="number" id="filterCaloriesMin" placeholder="Min Calories" onchange="filterWorkouts()">
+                <input type="number" id="filterCaloriesMax" placeholder="Max Calories" onchange="filterWorkouts()">
+                <input type="number" id="filterDurationMin" placeholder="Min Duration" onchange="filterWorkouts()">
+                <input type="number" id="filterDurationMax" placeholder="Max Duration" onchange="filterWorkouts()">
+                <select id="filterActivity" onchange="filterWorkouts()">
+                    <option value="">All Activities</option>
+                </select>
+                <select id="filterDate" onchange="filterWorkouts()">
+                    <option value="">All Dates</option>
+                </select>
+            </div>
+        </div>
 
-    <div class="tab-content" id="comparisonTab">
-        <h3>Best Workout Comparison</h3>
-        <p>Best calories burned in a workout: <span id="bestComparison">0</span></p>
-    </div>
+        <div class="tab-content" id="comparisonTab">
+            <h3>Best Workout Comparison</h3>
+            <div class="filters">
+                <input type="number" id="comparisonCaloriesMin" placeholder="Min Calories" onchange="filterComparison()">
+                <input type="number" id="comparisonDurationMin" placeholder="Min Duration" onchange="filterComparison()">
+                <select id="comparisonActivity" onchange="filterComparison()">
+                    <option value="">All Activities</option>
+                </select>
+            </div>
+            <ul id="bestComparison"></ul>
+        </div>
 
-    <div class="tab-content" id="visualizationTab">
-        <h3>Workout Visualization</h3>
-        <canvas id="caloriesChart"></canvas>
+        <div class="tab-content" id="visualizationTab">
+            <h3>Workout Visualization</h3>
+            <canvas id="caloriesChart"></canvas>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
