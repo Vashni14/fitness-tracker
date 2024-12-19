@@ -1,45 +1,46 @@
 const express = require('express');
-const mysql = require('mysql2');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const mysql = require('mysql');
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static('public'));
+const PORT = 3000;
 
-// MySQL Database Connection
+// Middleware
+app.use(bodyParser.json());
+app.use(express.static(__dirname)); // Serve static files from the main directory
+
+// Database Connection
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: '', // Update if your MySQL has a password
     database: 'fitness_tracker',
 });
 
 db.connect((err) => {
     if (err) throw err;
-    console.log('Database connected');
+    console.log('Connected to database');
 });
 
 // API Routes
-app.post('/api/log', (req, res) => {
-    const { activity, calories, duration } = req.body;
-    const sql = 'INSERT INTO workouts (activity, calories, duration) VALUES (?, ?, ?)';
-    db.query(sql, [activity, calories, duration], (err) => {
-        if (err) throw err;
-        res.sendStatus(201);
-    });
-});
-
 app.get('/api/workouts', (req, res) => {
-    const sql = 'SELECT * FROM workouts';
-    db.query(sql, (err, results) => {
-        if (err) throw err;
+    db.query('SELECT * FROM workouts', (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
         res.json(results);
     });
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.post('/api/workouts', (req, res) => {
+    const { activity, calories, duration, date } = req.body;
+    db.query(
+        'INSERT INTO workouts (activity, calories, duration, date) VALUES (?, ?, ?, ?)',
+        [activity, calories, duration, date],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: 'Failed to add workout' });
+            res.status(201).json({ message: 'Workout added successfully', id: result.insertId });
+        }
+    );
 });
+
+// Start Server
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

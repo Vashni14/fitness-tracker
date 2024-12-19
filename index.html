@@ -4,38 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fitness Tracker</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+    <div class="container">
         <h1>Fitness Tracker</h1>
-    </header>
-    <main>
-        <section>
-            <h2>Log Your Workout</h2>
-            <form id="workoutForm">
-                <input type="text" id="activity" placeholder="Activity" required>
-                <input type="number" id="calories" placeholder="Calories Burned" required>
-                <input type="number" id="duration" placeholder="Duration (minutes)" required>
-                <button type="submit">Log Workout</button>
-            </form>
-        </section>
-        <section>
-            <h2>Logged Workouts</h2>
-            <table>
+        <!-- Workout Form -->
+        <form id="workout-form">
+            <input type="text" id="activity" placeholder="Activity (e.g., Running)" required />
+            <input type="number" id="calories" placeholder="Calories Burned" required />
+            <input type="number" id="duration" placeholder="Duration (minutes)" required />
+            <input type="date" id="date" required />
+            <button type="submit">Add Workout</button>
+        </form>
+        <!-- Workout Log -->
+        <div class="table-container">
+            <h2>Workout Log</h2>
+            <table id="workout-table">
                 <thead>
                     <tr>
                         <th>Activity</th>
-                        <th>Calories</th>
+                        <th>Calories Burned</th>
                         <th>Duration</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
-                <tbody id="workoutTable">
-                    <!-- Dynamic content -->
-                </tbody>
+                <tbody id="workout-list"></tbody>
             </table>
-        </section>
-    </main>
+            <div class="empty-state" id="empty-state">No workouts logged yet.</div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
